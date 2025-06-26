@@ -1,0 +1,65 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Adjust the I2C address here (0x3F or 0x27 based on your module).
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
+
+void setup() {
+  Serial.begin(9600);
+
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0);
+  lcd.print("SIGN LANGUAGE");
+
+  pinMode(13, OUTPUT); // LED on Pin 13
+}
+
+void loop() {
+  int s1 = analogRead(A0);
+  int s2 = analogRead(A1);
+  int s3 = analogRead(A2);
+  int s4 = analogRead(A3);
+
+  // Debugging sensor values
+  Serial.println("--------------------------");
+  Serial.print("Sensor 1 Value: "); Serial.println(s1);
+  Serial.print("Sensor 2 Value: "); Serial.println(s2);
+  Serial.print("Sensor 3 Value: "); Serial.println(s3);
+  Serial.print("Sensor 4 Value: "); Serial.println(s4);
+  Serial.println("--------------------------");
+
+  // Check thresholds and display status
+  if (s1 < 150) {
+    Serial.println("Sensor 1 (WashRoom): ACTIVE");
+    digitalWrite(13, LOW);
+    lcd.setCursor(0, 1);
+    lcd.print("WASHROOM       ");
+    delay(2000);
+  } else if (s2 < 200) {
+    Serial.println("Sensor 2 (Drink Water): ACTIVE");
+    digitalWrite(13, HIGH);
+    lcd.setCursor(0, 1);
+    lcd.print("DRINK WATER    ");
+    delay(2000);
+  } else if (s3 < 150) {
+    Serial.println("Sensor 3 (Food): ACTIVE");
+    digitalWrite(13, LOW);
+    lcd.setCursor(0, 1);
+    lcd.print("FOOD           ");
+    delay(2000);
+  } else if (s4 < 130) {
+    Serial.println("Sensor 4 (Fruit): ACTIVE");
+    digitalWrite(13, HIGH);
+    lcd.setCursor(0, 1);
+    lcd.print("FRUIT          ");
+    delay(2000);
+  } else {
+    Serial.println("No Sensors Active");
+    lcd.setCursor(0, 1);
+    lcd.print("NOTHING        ");
+  }
+
+  // Provide a delay to avoid excessive printing
+  delay(500);
+}
